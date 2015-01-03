@@ -4,8 +4,10 @@
 #include "map.h"
 #include "actor.h"
 
-#define RED_ON attron(COLOR_PAIR(1))
-#define RED_OFF attroff(COLOR_PAIR(1))
+#define COLOR_WARN 300
+#define RED_ON attron(COLOR_PAIR(COLOR_WARN))
+#define RED_OFF attroff(COLOR_PAIR(COLOR_WARN))
+#define SCHEME(c,fg,bg) (init_pair(c, COLOR_##fg, COLOR_##bg))
 
 /* Global variables */
 
@@ -18,15 +20,15 @@ map room_1 = {
     "#                                              #",
     "#                                              #",
     "#                                              #",
-    "#                                              #",
-    "#                                              #",
-    "#                                              #",
-    "#                                              #",
+    "#                          000                 #",
+    "#                          00|                 #",
+    "#~~~                       ||                  #",
+    "#~~~~                                          #",
     "################################################"
   }
 };
 
-actor hero_struct = {NULL,0,0,'@',2};
+actor hero_struct = {NULL,0,0,'@'};
 actor * hero = &hero_struct;
 
 /* Update */
@@ -67,14 +69,15 @@ void draw() {
 /* Colors */
 
 void ensure_colors() {
-  if (has_colors()==FALSE) {
-    endwin();
-    printf("Your terminal does not support colors.\nWTF?!?\n");
-    exit(1);
+  if (has_colors()==TRUE) {
+    start_color();
+    SCHEME('@', GREEN, BLACK);
+    SCHEME('#', BLACK, YELLOW);
+    SCHEME('~', WHITE, CYAN);
+    SCHEME('|', YELLOW, BLACK);
+    SCHEME('0', GREEN, GREEN);
+    SCHEME(COLOR_WARN, RED, BLACK);
   }
-  start_color();
-  init_pair(1, COLOR_RED, COLOR_BLACK);
-  init_pair(2, COLOR_GREEN, COLOR_BLACK);
 }
 
 /* Main */

@@ -11,6 +11,7 @@ typedef struct {
 } map;
 
 void map_draw(map * self);
+void map_draw_sprite(map * self, int y, int x);
 int map_walkable_q(map * self, int y, int x);
 
 #endif

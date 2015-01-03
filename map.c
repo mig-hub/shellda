@@ -4,9 +4,16 @@ void map_draw(map * self) {
   int y, x;
   for (y = 0; y < MAP_H; y++) {
     for (x = 0; x < MAP_W; x++) {
-      mvaddch(y,x,self->sprites[y][x]);
+      map_draw_sprite(self,y,x);
     }
   }
+}
+
+void map_draw_sprite(map * self, int y, int x) {
+  char sprite = self->sprites[y][x];
+  if (has_colors()==TRUE) attron(COLOR_PAIR(sprite));
+  mvaddch(y,x,sprite);
+  if (has_colors()==TRUE) attroff(COLOR_PAIR(sprite));
 }
 
 int map_walkable_q(map * self, int y, int x) {

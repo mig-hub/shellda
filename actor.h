@@ -9,7 +9,6 @@ typedef struct {
   int y;
   int x;
   char face;
-  int color;
 } actor;
 
 void actor_move(actor * self, char c);

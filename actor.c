@@ -13,8 +13,8 @@ void actor_move(actor * self, char c) {
 }
 
 void actor_draw(actor * self) {
-  attron(COLOR_PAIR(self->color));
+  attron(COLOR_PAIR(self->face));
   mvaddch(self->y,self->x,self->face);
-  attroff(COLOR_PAIR(self->color));
+  attroff(COLOR_PAIR(self->face));
 }
 

@@ -1,34 +1,13 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "map.h"
+#include "actor.h"
 
-#define MAP_W 48
-#define MAP_H 12
-#define SPEED 30000
 #define RED_ON attron(COLOR_PAIR(1))
 #define RED_OFF attroff(COLOR_PAIR(1))
 
-/* Maps */
-
-typedef struct {
-  char sprites[MAP_H][MAP_W];
-} map;
-
-void map_draw(map * self) {
-  int y, x;
-  for (y = 0; y < MAP_H; y++) {
-    for (x = 0; x < MAP_W; x++) {
-      mvaddch(y,x,self->sprites[y][x]);
-    }
-  }
-}
-
-int map_walkable_q(map * self, int y, int x) {
-  if (y<0||x<0) return 0;
-  if (y>=MAP_H) return 0;
-  if (x>=MAP_W) return 0;
-  return self->sprites[y][x]==' ';
-}
+/* Global variables */
 
 map room_1 = {
   {
@@ -47,36 +26,8 @@ map room_1 = {
   }
 };
 
-map * current_map = &room_1;
-
-/* Actors */
-
-typedef struct {
-  int y;
-  int x;
-  char face;
-  int color;
-} actor;
-
-void actor_move(actor * self, char c) {
-  int x = self->x, y = self->y;
-  if (c=='h') x -= 1;
-  if (c=='j') y += 1;
-  if (c=='k') y -= 1;
-  if (c=='l') x += 1;
-  if (map_walkable_q(current_map,y,x)) {
-    self->x = x;
-    self->y = y;
-  }
-}
-
-void actor_draw(actor * self) {
-  attron(COLOR_PAIR(self->color));
-  mvaddch(self->y,self->x,self->face);
-  attroff(COLOR_PAIR(self->color));
-}
-
-actor hero = {10,10,'@',2};
+actor hero_struct = {NULL,0,0,'@',2};
+actor * hero = &hero_struct;
 
 /* Update */
 
@@ -85,7 +36,7 @@ void update() {
   if (c=='q') {
     endwin(); exit(0);
   }
-  actor_move(&hero,c);
+  actor_move(hero,c);
 }
 
 /* Draw */
@@ -105,8 +56,8 @@ void space_warning() {
 void draw() {
   clear();
   if (space_big_enough_q()) {
-    map_draw(current_map);
-    actor_draw(&hero);
+    map_draw(hero->place);
+    actor_draw(hero);
   } else {
     space_warning();
   }
@@ -133,10 +84,12 @@ int main(int argc, const char *argv[]) {
   noecho(); cbreak();
   curs_set(FALSE);
   ensure_colors();
+  hero->place = &room_1;
+  hero->y = 10;
+  hero->x = 10;
   while(1) {
     draw();
     update();
-    usleep(SPEED);
   }
   endwin();
   return 0;
